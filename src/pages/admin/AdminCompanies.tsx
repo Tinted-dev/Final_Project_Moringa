@@ -18,7 +18,7 @@ const AdminCompanies: React.FC = () => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/admin/companies`);
+      const response = await axios.get(`${API_URL}/admin/companies`, { withCredentials: true });
       setCompanies(response.data);
       
       // Initialize reset status for all companies
@@ -50,7 +50,8 @@ const AdminCompanies: React.FC = () => {
     
     try {
       await axios.delete(`${API_URL}/admin/companies/${companyToDelete}`, {
-        data: { password: confirmPassword }
+        data: { password: confirmPassword },
+        withCredentials: true,
       });
       
       // Remove deleted company from state
@@ -73,7 +74,9 @@ const AdminCompanies: React.FC = () => {
     );
     
     try {
-      await axios.post(`${API_URL}/admin/companies/${companyId}/reset-password`);
+      await axios.post(`${API_URL}/admin/companies/${companyId}/reset-password`, null, {
+        withCredentials: true,
+      });
       
       // Update status to success
       setResetStatus(prevStatus => 
@@ -266,68 +269,47 @@ const AdminCompanies: React.FC = () => {
           </div>
         )}
 
-        {/* No results */}
+        {/* No companies found */}
         {!loading && filteredCompanies.length === 0 && (
-          <div className="bg-white shadow-md rounded-lg p-6 text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No companies found</h3>
-            <p className="text-gray-600 mb-4">
-              {searchTerm 
-                ? `No companies matched your search for "${searchTerm}"`
-                : "There are no companies registered yet."}
-            </p>
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="text-primary-600 hover:text-primary-700"
-              >
-                Clear search
-              </button>
-            )}
+          <p className="text-center text-gray-600">No companies found.</p>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {isDeleting && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-xl font-semibold mb-4">Confirm Delete</h2>
+              <p className="mb-4">Please enter your password to confirm deleting this company.</p>
+              <input
+                type="password"
+                placeholder="Your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => {
+                    setIsDeleting(false);
+                    setCompanyToDelete(null);
+                    setConfirmPassword('');
+                  }}
+                  className="px-4 py-2 border rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  disabled={!confirmPassword.trim()}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {/* Delete Confirmation Modal */}
-      {isDeleting && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Deletion</h3>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to delete this company? This action cannot be undone.
-            </p>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Enter your password to confirm
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => {
-                  setIsDeleting(false);
-                  setCompanyToDelete(null);
-                  setConfirmPassword('');
-                }}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteConfirm}
-                disabled={!confirmPassword}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

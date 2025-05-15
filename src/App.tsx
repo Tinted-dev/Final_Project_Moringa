@@ -11,6 +11,7 @@ import DashboardPage from './pages/company/DashboardPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCompanies from './pages/admin/AdminCompanies';
 import AdminRegions from './pages/admin/AdminRegions';
+import AdminLayout from './pages/admin/AdminLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 
@@ -26,38 +27,30 @@ function App() {
               <Route path="/companies" element={<CompaniesPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route 
-                path="/dashboard" 
+
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <DashboardPage />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/admin" 
+
+              {/* Nested admin routes */}
+              <Route
+                path="/admin"
                 element={
                   <AdminRoute>
-                    <AdminDashboard />
+                    <AdminLayout />
                   </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/companies" 
-                element={
-                  <AdminRoute>
-                    <AdminCompanies />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/regions" 
-                element={
-                  <AdminRoute>
-                    <AdminRegions />
-                  </AdminRoute>
-                } 
-              />
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="companies" element={<AdminCompanies />} />
+                <Route path="regions" element={<AdminRegions />} />
+              </Route>
             </Routes>
           </main>
           <Footer />

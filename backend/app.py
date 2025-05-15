@@ -5,6 +5,7 @@ from auth_routes import auth_bp
 from companies_routes import companies_bp
 from admin_routes import admin_bp
 from regions_routes import regions_bp
+from flask_cors import CORS
 
 
 
@@ -13,6 +14,9 @@ from regions_routes import regions_bp
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # CORS(app, supports_credentials=True)
+    CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
     
     init_extensions(app)
     

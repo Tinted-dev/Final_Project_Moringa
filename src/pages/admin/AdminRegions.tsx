@@ -18,7 +18,7 @@ const AdminRegions: React.FC = () => {
   const fetchRegions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/admin/regions`);
+      const response = await axios.get(`${API_URL}/admin/regions`, { withCredentials: true });
       setRegions(response.data);
       setError(null);
     } catch (err) {
@@ -47,29 +47,33 @@ const AdminRegions: React.FC = () => {
 
   const handleSaveRegion = async () => {
     if (!regionName.trim()) return;
-    
+
     setIsSaving(true);
     try {
       if (addingRegion) {
         // Add new region
-        const response = await axios.post(`${API_URL}/admin/regions`, {
-          name: regionName.trim()
-        });
+        const response = await axios.post(
+          `${API_URL}/admin/regions`,
+          { name: regionName.trim() },
+          { withCredentials: true }
+        );
         setRegions([...regions, response.data]);
         setSuccessMessage('Region added successfully');
       } else if (editingRegion) {
         // Update existing region
-        const response = await axios.put(`${API_URL}/admin/regions/${editingRegion.id}`, {
-          name: regionName.trim()
-        });
+        const response = await axios.put(
+          `${API_URL}/admin/regions/${editingRegion.id}`,
+          { name: regionName.trim() },
+          { withCredentials: true }
+        );
         setRegions(regions.map(r => (r.id === editingRegion.id ? response.data : r)));
         setSuccessMessage('Region updated successfully');
       }
-      
+
       setAddingRegion(false);
       setEditingRegion(null);
       setRegionName('');
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage(null);
@@ -86,12 +90,12 @@ const AdminRegions: React.FC = () => {
     if (!confirm('Are you sure you want to delete this region? This may affect companies that are associated with it.')) {
       return;
     }
-    
+
     try {
-      await axios.delete(`${API_URL}/admin/regions/${regionId}`);
+      await axios.delete(`${API_URL}/admin/regions/${regionId}`, { withCredentials: true });
       setRegions(regions.filter(r => r.id !== regionId));
       setSuccessMessage('Region deleted successfully');
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage(null);
@@ -123,8 +127,8 @@ const AdminRegions: React.FC = () => {
               Create, edit, and manage service regions for companies.
             </p>
           </div>
-          
-          <button 
+
+          <button
             onClick={handleAddClick}
             className="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
           >
@@ -168,7 +172,7 @@ const AdminRegions: React.FC = () => {
               <h3 className="text-lg font-medium text-gray-900">
                 {addingRegion ? 'Add New Region' : 'Edit Region'}
               </h3>
-              <button 
+              <button
                 onClick={handleCancel}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -254,7 +258,7 @@ const AdminRegions: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
-                          <Link 
+                          <Link
                             to={`/companies?region=${region.id}`}
                             className="text-primary-600 hover:text-primary-900"
                           >

@@ -38,7 +38,7 @@ const AdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
+      <div className="min-h-screen flex justify-center items-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>
     );
@@ -119,11 +119,11 @@ const AdminDashboard: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">Total Companies</p>
-                <p className="text-2xl font-bold text-primary-600">{stats?.totalCompanies || 0}</p>
+                <p className="text-2xl font-bold text-primary-600">{stats?.totalCompanies ?? 0}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">Total Regions</p>
-                <p className="text-2xl font-bold text-primary-600">{stats?.totalRegions || 0}</p>
+                <p className="text-2xl font-bold text-primary-600">{stats?.totalRegions ?? 0}</p>
               </div>
             </div>
           </div>
@@ -133,12 +133,16 @@ const AdminDashboard: React.FC = () => {
               Companies per Region
             </h3>
             <div className="space-y-3 max-h-60 overflow-y-auto">
-              {stats?.companiesPerRegion.map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-gray-700">{item.regionName}</span>
-                  <span className="font-semibold text-primary-600">{item.count}</span>
-                </div>
-              ))}
+              {stats?.companiesPerRegion && stats.companiesPerRegion.length > 0 ? (
+                stats.companiesPerRegion.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-gray-700">{item.regionName}</span>
+                    <span className="font-semibold text-primary-600">{item.count}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 italic">No company data per region available.</p>
+              )}
             </div>
           </div>
         </div>

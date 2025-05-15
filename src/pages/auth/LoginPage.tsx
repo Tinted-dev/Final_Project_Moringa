@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { LogIn } from 'lucide-react';
@@ -6,22 +6,36 @@ import { useAuth } from '../../context/AuthContext';
 import { LoginData } from '../../types';
 
 const LoginPage: React.FC = () => {
-  const { login, error } = useAuth();
+  const { login, error, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting } 
+  const [redirecting, setRedirecting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
   } = useForm<LoginData>();
 
   const onSubmit = async (data: LoginData) => {
     try {
       await login(data);
-      navigate('/dashboard');
+      setRedirecting(true);
     } catch (error) {
-      // Error is handled in the auth context
+      // Handled in context
     }
   };
+
+  useEffect(() => {
+    if (redirecting && user) {
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'company') {
+        navigate('/company/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [redirecting, user, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -42,7 +56,7 @@ const LoginPage: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {error && (
+          {(error && !isSubmitting) && (
             <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
               <div className="flex">
                 <div className="ml-3">
@@ -51,7 +65,7 @@ const LoginPage: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -65,7 +79,7 @@ const LoginPage: React.FC = () => {
                   className={`appearance-none block w-full px-3 py-2 border ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
                   } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm`}
-                  {...register('email', { 
+                  {...register('email', {
                     required: 'Email is required',
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -91,7 +105,7 @@ const LoginPage: React.FC = () => {
                   className={`appearance-none block w-full px-3 py-2 border ${
                     errors.password ? 'border-red-300' : 'border-gray-300'
                   } rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm`}
-                  {...register('password', { 
+                  {...register('password', {
                     required: 'Password is required',
                     minLength: {
                       value: 6,
@@ -128,13 +142,13 @@ const LoginPage: React.FC = () => {
             <div>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || redirecting}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
-                {isSubmitting ? (
+                {(isSubmitting || redirecting) ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                    Signing in...
+                    Redirecting...
                   </div>
                 ) : (
                   'Sign in'
