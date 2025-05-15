@@ -21,20 +21,31 @@ const CompaniesPage: React.FC = () => {
         
         // Fetch regions
         const regionsResponse = await axios.get(`${API_URL}/regions`);
-        setRegions(regionsResponse.data);
+        console.log("Regions API response:", regionsResponse.data);
+        setRegions(
+          Array.isArray(regionsResponse.data)
+            ? regionsResponse.data
+            : regionsResponse.data.regions // if wrapped
+        );
         
-        // Fetch companies with filter if selected
+        // Fetch companies
         let url = `${API_URL}/companies`;
         if (selectedRegion) {
           url += `?region=${selectedRegion}`;
         }
         
         const companiesResponse = await axios.get(url);
-        setCompanies(companiesResponse.data);
+        console.log("Companies API response:", companiesResponse.data);
+        setCompanies(
+          Array.isArray(companiesResponse.data)
+            ? companiesResponse.data
+            : companiesResponse.data.companies // if wrapped
+        );
+
         setError(null);
       } catch (err) {
         setError('Failed to load data. Please try again later.');
-        console.error(err);
+        console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -53,6 +64,10 @@ const CompaniesPage: React.FC = () => {
   const handleRegionSelect = (regionId: number | null) => {
     setSelectedRegion(regionId);
   };
+
+  // Debugging logs
+  console.log("Filtered companies:", filteredCompanies);
+  console.log("Regions state:", regions);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
