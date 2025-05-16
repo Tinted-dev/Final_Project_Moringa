@@ -90,15 +90,27 @@ flask run
 
 ```
 ecowaste/
+├──backend/
+  ├── app.py                  # Flask app factory and setup
+  ├── config.py               # Configuration variables
+  ├── extensions.py           # Extensions initialization (db, login_manager, cors)
+  ├── models.py               # Database models (User, Company, Region)
+  ├── auth_routes.py          # Auth routes (register, login, profile)
+  ├── company_routes.py       # Company-related routes
+  ├── admin_routes.py         # Admin routes (regions, companies, stats)
+  ├── helpers.py              # Helper functions and decorators (token_required, admin_required)
+  └── seed.py                 # Seed initial data (admin, sample regions, companies)
 ├── src/
-│   ├── components/     # Reusable UI components
-│   ├── context/       # React context providers
-│   ├── pages/         # Page components
-│   └── types/         # TypeScript definitions
-├── backend/
-│   ├── app.py         # Flask application
-│   └── requirements.txt
-└── public/            # Static assets
+│   ├── components/
+│   ├── context/
+│   ├── pages/
+│   │   ├── admin/
+│   │   ├── auth/
+│   │   └── company/
+│   └── types/
+├── public/
+└── package.json
+
 ```
 
 ## Key Features
