@@ -8,9 +8,6 @@ from regions_routes import regions_bp
 from flask_cors import CORS
 
 
-
-
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)

@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User  # Update to match your actual User model import
 from extensions import db  # ✅ Correct way to avoid circular import
  # Update to match your app
+from flask_login import login_user
+
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
